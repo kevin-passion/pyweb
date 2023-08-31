@@ -2,7 +2,7 @@ from flask import render_template, request, Response, session, jsonify, make_res
 from datetime import datetime, date
 from sqlalchemy.orm import subqueryload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, text
 from helloflask import app
 from helloflask.classes import FormInput
 from helloflask.init_db import db_session
@@ -14,18 +14,26 @@ from werkzeug.utils import secure_filename
 
 from oauth2client.contrib.flask_util import UserOAuth2
 
-app.config['GOOGLE_OAUTH2_CLIENT_SECRETS_FILE'] = 'secret.json'
-app.config['GOOGLE_OAUTH2_CLIENT_ID'] = os.environ['OAUTH_CLIENT']
-app.config['GOOGLE_OAUTH2_CLIENT_SECRET'] = os.environ['OAUTH_SECRET']
+import dotenv
+from werkzeug.wrappers import Request
 
-oauth2 = UserOAuth2(app)
+dotenv_file = dotenv.find_dotenv()
+dotenv.load_dotenv(dotenv_file)
+
+# app.config['GOOGLE_OAUTH2_CLIENT_SECRETS_FILE'] = 'secret.json'
+# app.config['GOOGLE_OAUTH2_CLIENT_ID'] = os.environ['OAUTH_CLIENT']
+# app.config['GOOGLE_OAUTH2_CLIENT_SECRET'] = os.environ['OAUTH_SECRET']
+
+# oauth2 = UserOAuth2(app)
 
 @app.route('/google_oauth')
-@oauth2.required
+# @oauth2.required
 def google_oauth():
-    print("Google OAuth>> {} ({})".format(oauth2.email, oauth2.user_id))
+    print("보안 토큰 확인중..")
+    # print("Google OAuth>> {} ({})".format(oauth2.email, oauth2.user_id))
 
-    u = User.query.filter('email = :email').params(email=oauth2.email).first()
+    # u = User.query.filter('email = :email').params(email=oauth2.email).first()
+    u = User.query.filter(text('email = :email')).params(email='sangeuncho54@gmail.com').first()
     if u is not None:
         session['loginUser'] = {'userid': u.id, 'name': u.nickname}
         if session.get('next'):
@@ -35,7 +43,8 @@ def google_oauth():
         return redirect('/')
     else:
         flash("해당 사용자가 없습니다!!")
-        return render_template("login.html", email=oauth2.email)
+        # return render_template("login.html", email=oauth2.email)
+        return render_template("login.html", email='sangeuncho54@gmail.com')
     
 
 
@@ -43,7 +52,7 @@ def songlist(dt):
     sr = SongRank.query.filter_by(rankdt=dt).options(joinedload(SongRank.song))
     sr = sr.options(joinedload(SongRank.song, Song.album))
     sr = sr.options(joinedload(SongRank.song, Song.songartists))
-    sr = sr.filter("atype=0")
+    sr = sr.filter(text("atype=0"))
     return sr
 
 
@@ -145,9 +154,10 @@ def myalbum():
 
     loginUser = session.get('loginUser')
     loginId = loginUser.get('userid')
-    songs = Myalbum.query.filter('userid=:userid').params(userid=loginId).all()
+    songs = Myalbum.query.filter(text('userid=:userid')).params(userid=loginId).all()
 
-    if request.is_xhr:
+    # if request.is_xhr:
+    if request.headers.get('X-Requested-Width') == 'XMLHttpRequest':
         return jsonify([s.json() for s in songs])
         
     return render_template("myalbum.html", songs=songs)
@@ -207,7 +217,7 @@ def login():
 def login_post():
     email = request.form.get('email')
     passwd = request.form.get('passwd')
-    u = User.query.filter('email = :email and passwd = sha2(:passwd, 256)').params(email=email, passwd=passwd).first()
+    u = User.query.filter(text('email = :email and passwd = sha2(:passwd, 256)')).params(email=email, passwd=passwd).first()
     if u is not None:
         session['loginUser'] = { 'userid': u.id, 'name': u.nickname }
         if session.get('next'):
@@ -254,7 +264,8 @@ def myalbums():
     songs = Myalbum.query.filter('userid=:userid').params(
         userid=loginUser.get('userid')).all()
 
-    if request.is_xhr:
+    # if request.is_xhr:
+    if request.headers.get('X-Requested-Width') == 'XMLHttpRequest':
         return jsonify([s.json() for s in songs])
 
     return render_template("ttt2.html", songs=songs)

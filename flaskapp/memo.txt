@@ -1,0 +1,356 @@
+Request Parameter
+
+# MultDict Type 
+...get('<param name>', <default-value>, <type>)
+methods: get, getlist, clear, etc 
+
+# GET 
+request.args.get('q')
+
+# POST 
+request.form.get('p', 123)   # post는 form 사용 
+
+# GET or POST 
+request.values.get('v')    # values는 get인지 post인지 모를 때 사용 
+
+# Parameters
+request.args.getlist('qs')
+
+
+Request Parameter Custom Function Type
+
+# request 처리용 함수  : 메모리에서 처음 한번만 만들어 지고 재사용된다.
+def ymd(fmt):
+    def trans(date_str):
+        return datetime.strptime(date_str, fmt)
+    return trans 
+
+@app.route('/dt')
+def dt():
+    datestr = request.values.get('date', date.today(), type=ymd('%y-%m-%d'))
+    return "우리나라 시간 형식: " + str(datestr)
+
+
+
+
+request.environ 
+
+return ('REQUEST_METHOD: %(REQUEST_METHOD) s <br>)'   => request.environ['REQUEST_METHOD'] 와 같다.
+        'SCRIPT_NAME: %(SCRIPT_NAME) s <br>'
+        'PATH_INFO: %(PATH_INFO) s <br>'
+        'QUERY_STRING: %(QUERY_STRING) s <br>'
+        'SERVER_NAME: %(SERVER_NAME) s <br>'
+        'SERVER_PORT: %(SERVER_PORT) s <br>'
+        'SERVER_PROTOCOL: %(SERVER_PROTOCOL) s <br>'
+        'wsgi.version: %(wsgi.version) s <br>'
+        'wsgi.url_scheme: %(wsgi.url_scheme) s <br>'
+        'wsgi.input: %(wsgi.input) s <br>'
+        'wsgi.errors: %(wsgi.errors) s <br>'
+        'wsgi.mutithread: %(wsgi.mutithread) s <br>'
+        'wsgi.mutiprocess: %(wsgi.mutiprocess) s <br>'
+        'wsgi.run_once: %(wsgi.run_once) s') % request.environ
+
+
+### request 
+
+request.is_xhr   # xml http header   # is_xhr : true이면 ajax 형태 
+
+request.endpoint 
+
+request.get_json()  # ajax에서 data: { ... } 개체 
+
+app.config.update(MAX_CONTENT_LENGTH=1024*1024)  # 업로드 max 사이즈 제약 , application context의 환경을 변경한다.
+request.max_content_length 
+
+
+### Response Object
+
+from flask import Response
+
+# Response Attributes
+- headers
+- status
+- status_code
+- data 
+- mimetype
+
+ex)
+res = Response("Test")
+res.headers.add('Program-Name', 'Test Response')
+res.set_data("This is Test Program")
+res.set_cookie("UserToken", "A12Bc9")
+
+# Cookie __init__ Arguments     #cookie는 브라우저에 담는다.
+- Key
+- value
+- max_age  # 기간이 되면 소멸 시켜라.
+- expires  # day가 되면 소멸 시켜라. 
+- domain
+- path 
+
+ex)
+res = Response("Test")
+res.set_cookie("UserToken", "A12Bc9")
+request.cookies.get('UserToken', 'default token')
+
+
+
+### Session : 서버 메모리에 있는 싱글톤 객체  , 서버에 심는 쿠키라고 볼수 있다.
+
+from flask import session 
+
+app.secret_key = 'X123dfgdgdgd'
+or
+app.config.update(
+    SECRET_KEY='X123dfgdgdgd'
+    SESSION_COOKIE_NAME='pyweb_flask_session'
+    PERMANENT_SESSION_LIFETIME=timedelta(31)     # 일정 시간이 지나면 세션 정보를 지운다.
+)
+* Save to Memory / File / db
+
+
+
+### macro
+# {% macro macro_name(args...) %} ~ {% endmacro %}
+{% macro test_macro(type) %}
+    <h3>
+        TEST MACRO : {{type}}
+    </h3>
+{% endmacro %}    
+
+# main.html
+{% block ... %}
+    <P>{{ test_macro('password') }}</p>
+{% endblock %}    
+
+
+### Callable macro
+
+# {% call macro_name(args...) %} ~ {% endcall %}
+
+{% macro test_macro2(type, class='red') %}
+    <h3 class="{{class}}">
+        TEST MACRO : {{type}} - {{test_macro.caller}}
+        <div> {{caller() }}
+    </h3>
+{% endmacro %}
+
+# main.html 
+{% block ... %}
+    {% call test_macro2('Hong') %}
+        <p>This is main.macro.call</p>
+    {% endcall %}
+{% endblock %}
+
+# call with args
+{% call(x) test_macro2('password') %} 
+    {{x}} 
+{% endcall %}
+<== in macro : caller(x=200)
+
+
+### Import Macro Module
+
+# {% import "macro_file_path" as <macro-alias> [with context] %}
+
+{% import "macro/commons.html" as cm %}
+    <h3>
+        TEST MACRO2: {{cm.test_macro2()}}
+    </h3>
+
+# {% import "macro_file_path" as <macro-alias> with context %}    # with context : 함수의 파라메터야 나랑 함께 해줘.
+  (macro.html에서 main.html의 변수를 사용할 수 있음)
+
+# 특정 매크로만 import 하기 
+# {% from "file_path" import <macro>, <macro2> %}
+{% block ... %}
+    <p>{{ test_macro('password') }}</p>
+{% endblock %}    
+
+# macro_main이 _(underscore로 시작하면 private(import 불가))
+
+
+1) 로그인 modal 창 macro 로 작성하기
+    header
+    body - caller()
+    footer - isShowFooter  : footer가 true 일때 만 나오도록 
+
+
+### Include
+
+# {% include "include_file_path" %}
+<div>
+    {% include "inc/navbars.html" %}
+</div>
+
+# {% include "include_file_path" ignore missing %}  - 파일이 없을 때 에러 없이 무시 
+
+# {% include ["a.html", "b.html"] %}  - a.html 없으면 b.html를 대신한다. 
+<div>
+    {% include ["inc/navbars.html", "inc/menus.html"] ignore missing %}
+</div>    
+
+# {% include "include_file_path" without context %}    # default : with context
+<div>
+    {% include "inc/navbars.html" without context %}
+</div>
+
+
+### Template Filters 
+
+@app.template_filter('ymd') 
+def datetime_ymd(dt, fmt='%m-%d'):
+    if isinstance(dt, date):
+        return dt.strftime(fmt)    <= string을 포맷팅한다.   dt.strptime() <= string을 파싱한다.
+    else:
+    return dt
+
+# in template
+{{ today | ymd }} or {{ today | ymd('%m/%d')}} or {{today | ymd('%m-%d') | safe }}
+
+# basic filters : safe, striptags, abs, escape, filesizeformat, replace, int, round, trim, truncate, wordwrap, indent
+
+# batch filter : batch(div size, str to fill)
+    {% for row in range(-2,32) | batch(7, 'TT') %}
+    <p>{{row}}</p>
+    {% endfor%}
+
+
+### Batch Filter
+
+1) 2019년 2월 달력을 출력하시오
+2) 2019년 전체 달력을 출력하시오
+
+(참고) timedelta vs relativedelta
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
+# timedelta units: days, hours, minutes, seconds, microseconds
+# relativedelta units: months, years
+d = datetime.strptime('2019-01-01', '%Y-%m-%d)
+nextMonth = d + relativedelta(months=1)
+
+# d.day, d.month, d.weekly():  {0:월, 1:화,...,6:일}
+
+
+
+
+Modularize Source 
+# flaskapp package 
+# __init__.py  : app
+# views.py : router 
+# filters.py : template_filters 
+# utils.py : utility functions
+# classes.py : classes 
+# models.py : data models
+
+
+### SQLAlchemy
+
+# RDBMS ORM Manipulate in python
+
+# python lib base in ORM (Object-Relational Mapping)
+
+# 설치: pip install SQLAlchemy
+
+# modules 
+from sqlalchemy import create_engine, Table, Column 
+from sqlalchemy import Integer, String, Boolean, Date, Time, Float, BigInt, Binary, LargeBinary, Bolb, Clob, DateTime, TIMESTAMP
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.delarative import declarative_base
+from sqlalchemy.ext import SQLAlchemyException
+
+
+### Initialize MySQL Connection 
+# mysql_url = "mysql+pymysql://<user>:<password>@<ip>/<dbname>?charset=utf8"
+engine = create_engine(mysql_url, echo=True, convert_unicode=True)
+
+# Declare & create Session 
+db_session = scoped_session( sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
+# Create sqlalchemy Base Instance
+Base = declarative_base()
+Base.query = db_session.query_property()
+
+def init_database():
+    Base.metadata.create_all(bind=engine)
+
+### Connection Management 
+# Auto Managed Connection, But db_session create every request 
+
+# initialize connection : 서버 구동후 최초 접속시 한번만 생성 
+@app.before_first_request
+def beforeFirst():
+    init_datebase()
+
+# close connection 
+@app.teardown_appcontext
+def teardown(exception):
+    db_session.remove()
+
+
+### Data Model   ORM
+# Data Model is value object(DTO)
+
+# Data Model mapped Table
+
+# extends SqlAlchemy Base Class and __tablename__
+class User(Base):
+    __tablename__ = 'User'
+
+# Member variable is Column 
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True)
+    nickname = Column(String)
+
+    def __init__(self, email=None, nickname='손님'):
+
+    def __repr__(self):
+        return 'User %r, %r' % (self.email, self.nickname)
+
+### mariadb에 권한 부여 
+grant create, drop, update, select  on indidb.* to indiuser;
+flush privileges;
+
+show grants for indiuser;
+
+
+### Data Manipulates 
+# Create(insert)
+u = User('abc@efg.com', 'hong')
+db_session.add(u)
+
+# Read(select)
+u = User.query.filter(User.id==2).first()
+
+# Update
+u.email = 'qqq@ppp.com'
+db_session.add(u) # auto-update if exists id 
+
+# Delete
+db_session.delete(u)  
+
+# Commit & Rollback(SQLAlchemyError)
+db_session.commit()
+db_session.rollback()
+
+
+### Send query
+# db_session().exeute()
+s=db_session()
+
+s.execute("update User set nickname=:nickname where id = :id", {'id':3, 'nickname': 'hong3'})
+
+result = s.execute('select if, nickname from User where id > :id', {'id':1})
+
+# from collections import namedtuple  # key-value로 받고자 할 때 
+record = namedtuple('User', result.keys())
+records = [Record(*r) for r in result.fetchall()]
+for r in records:
+    print(r, r.nickname, type(r))
+s.close()    
+
+
+
+### Server Side Template 
+/ Home (app.html) :

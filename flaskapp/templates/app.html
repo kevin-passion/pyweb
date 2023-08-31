@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% import "macro/tests.html" as cm %}
+
+{% from "macro/forms.html" import input, radios, radio, textarea, checkbox, select, modal %}
+
+{% block test %}
+    {# <p>{{today | ymd('%H:%M) | safe}}</p>
+    <p>{{today | simpledate | safe}}</p> #}
+    
+    <p>{{ '3096.2345' | float | int }}</p>
+    <p>{{ 3096 | filesizeformat(True) }}</p>
+    <div>
+        <table>
+        {% for row in range(-4,32) | batch(7, '&nbsp;') %}
+        <tr>
+            {% for col in row %}
+                {% if col|int > 0 %}
+                <td>{{col | safe}}</td>
+                {% else %}
+                <td>{{'&nbsp;' | safe}}</td>
+                {% endif %} 
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <pre>
+{{'abc' | center(50)}}
+{{'abddjklsjlksjklfjdksljsdkfljfklc' | center(50)}}
+{{('abddjklsjlksjklfjdksljsdkfljfklc' * 5) | wordwrap(50)}}
+{{('abddjklsjlksjklfjdksljsdkfljfklc' * 5) | truncate(20)}}
+    </pre>
+
+    {% call(x) cm.test_macro2('Hong','ccc') %}
+        <p>This is app.html.call block: <strong>{{x}}</strong> </p>
+    {% endcall %}
+
+    <input type="text" id="userid" name="userid" value="value" class="form-control">
+    {{input()}}
+    <textarea name="" id="" rows="3" class="form-control"></textarea>
+    <select name="sel111" id="sel111">
+        <option value="0">first</option>
+        <option value="1">second</option>
+        <option value="2">third</option>
+    </select>
+
+    <form action="" class="container">
+        <div class="form-group">
+            <div class="form-check">
+                <input type="radio" class="form-check-input"
+                    name="exampleRadios"
+                    id="exampleRadios1"
+                    value="option1" 
+                    checked>
+                <label class="form-check-label" for="exampleRadios1">
+                    Default radio
+                </label>
+            </div>
+            <div class="form-check">
+                <input type="radio" class="form-check-input"
+                    name="exampleRadios"
+                    id="exampleRadios2"
+                    value="option2" 
+                    >
+                <label class="form-check-label" for="exampleRadios2">
+                    Second Default radio
+                </label>
+            </div>
+            {{radio('r1', 'rdo', 'val1', 'value1')}}
+            {{radio('r2', 'rdo', 'val2', 'value2')}}
+            {{radio('r3', 'rdo', 'val3', 'value3')}}
+        </div>
+
+        {{textarea('txt1','txt1','default area' )}}
+        {{textarea('txt1','txt2')}}
+
+        {{checkbox(dict(id='chk1', checked='checked', text='Default Checkbox'))}}
+
+        {{select([dict(id='sel1', name='sel1', text='Open this select menu', selected=False, class='sel01'), 
+            dict(id='sel2', name='sel2', text='One', selected=True, class='sel01'), 
+            dict(id='sel3', name='sel3', text='Two', selected=False, class='sel01')         
+        ], tit="전체")}}
+
+        {{radios(radioList)}}
+    </form>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" 
+        data-target="#mdl1" data-whatever="@mdo">Open modal for @mdo</button>
+
+    {% call modal('mdl1', '테스트 모달', true, "fn_test()") %}
+        <h3>Modal body</h3>
+        <script>
+            function fn_test(modalId) {
+                $('#'+modalId).modal(show);
+                alert('aaaaaaaaaaaaaaaaaaaaaaaaaa!!');
+                closeModal('mdl1');
+            }
+        </script>
+    {% endcall %}
+
+ 
+{% endblock %} 
+
+{% block main %}
+<section id="magazine" class="wow fadeIn">
+    <h2 class="h1 text-center my-5 font-weight-bold">Top 100</h2>
+
+    <div class="row text-left">
+        <!--Grid column-->
+        <div class="col-lg-6 col-md-6">
+            <!--Image-->
+            <div class="view overlay rounded z-depth-1-half mb-3">
+                <!-- <img src="C:\Users\kv709\OneDrive\사진\20230730_대진해돋이.jpg" class="img-fluid" alt="Sample post image"> -->
+                <img src="{{url_for('static', filename='images/20230730_대진해돋이.jpg')}}" class="img-fluid" alt="Sample post image">
+            </div>
+            <a>
+                <div class="mask rgba-white-slight"></div> 
+            </a>
+        </div>
+
+        <!--Excerpt-->
+        <div class="news-data">
+            <a href="" class="light-blue-text">
+                <h4>
+                    <i class="fas fa-music"></i>
+                    <strong>Songs</strong>
+                </h4>
+            </a>
+            <p>
+                <strong>
+                    <i class="far fa-clock"></i>
+                    yyyy-mm-dd
+                </strong>
+            </p>
+        </div>
+        <h3>
+            <a href="">
+                <strong>
+                    Today's Top 100
+                </strong>
+            </a>
+        </h3>
+        <hr>
+
+        <div class="row">
+            <div class="col-md-2">
+                <h1 class="text-primary">
+                    100
+                </h1>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

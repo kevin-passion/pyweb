@@ -1,0 +1,139 @@
+{% macro input(type='text', id='', name='', value='', class='') -%}
+    <input type="{{type}}" 
+        {% if id %}id="{{id}}"{% endif %} 
+        name="{{name}}" 
+        value="{{value}}" 
+        class="form-control {{class}}">
+{%- endmacro %}
+
+{% macro radio(id, name='', value='', text='', checked='', class='') -%}
+    <div class="form-check">
+        <input type="radio" class="form-check-input {{class}}"
+            name="{{name}}"
+            id="{{id}}"
+            value="{{value}}"
+            {{checked}}
+        >
+        <label for="{{id}}" class="form-check-label">
+            {{text}}
+        </label>
+    </div>
+{%- endmacro %}
+
+{% macro radios(lst, class='') -%}
+    <div class="form-group">
+        {% for r in lst %}
+        <div class="form-check">
+            <input type="radio" class="form-check-input {{class}}"
+                name="{{r.name}}"
+                id="{{r.id}}"
+                value="{{r.value}}"
+                {{r.checked}}
+            >
+            <label for="{{r.id}}" class="form-check-label">
+                {{r.text}}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+{%- endmacro %}
+
+{% macro textarea(name='', id='', value='', class='' ) -%}
+    <div class="form-group">
+        <textarea 
+            name="{{name}}" 
+            {% if id %}id="{{id}}" {% endif %}
+            class="form-control {{class}}"
+            cols="30" 
+            rows="2">{{value}}
+        </textarea>
+    </div>
+{%- endmacro %}
+
+<!-- # checkbox default for = flexCheckDefault / checked for = flexCheckChecked -->
+{% macro checkbox(d) -%}
+<div class="form-group">
+    <div class="form-check">
+    <input class="form-check-input" type="checkbox" value="{{d.checked}}" id="{{d.id}}">
+    <label class="form-check-label" for="{{d.id}}" >
+      {{d.text}}
+    </label>
+  </div>
+</div>  
+{%- endmacro %}  
+
+{% macro select(lst, tit="") -%}
+<div class="form-group">
+  <select class="form-select" aria-label="Default select example">
+    {% if tit %}<option selected>{{tit}}</option>{% endif %}
+    {% for d in lst %}
+    <option value="{{d.value}}" {% if d.selected %}selected{% endif %}>{{d.text}}</option>
+    {% endfor %}
+  </select>
+</div>
+{%- endmacro %}
+
+{% macro modal(id, title, icon='', isShowFooter=false, ok_fn='' ) %}
+    <!-- modal -->
+    <div class="modal fade" id="{{id}}" 
+        tabindex="-1" 
+        role="dialog"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" >
+                        <strong>
+                            {% if icon %}
+                            <i class="{{icon}}"></i>
+                            {% endif %}
+                            {{title}}
+                        </strong>
+                    </h3>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{caller()}}
+                </div>
+                {% if isShowFooter %}
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                    <button class="btn btn-primary" type="button" onclick="{{ok_fn}}">확인</button>
+                </div>
+                <!-- modal-footer -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+# template filter 사용 
+{% macro calendar(dt) %}
+<div class="container text-center">
+    <h1 class="text-center">{{dt | month}}월</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                {%- for w in '일월화수목금토' %}
+                    <th>{{w}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in range(dt|sdt,dt|edt) | batch(7, '&nbsp;') %}
+            <tr>
+                {% for col in row %}
+                    {% if col|int > 0 %}
+                    <td>{{col | safe}}</td>
+                    {% else %}
+                    <td>{{'&nbsp;' | safe}}</td>
+                    {% endif %} 
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}

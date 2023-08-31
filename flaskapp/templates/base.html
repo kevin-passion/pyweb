@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{% block document_title %}Melon Top 50{% endblock %}</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+
+    
+</head>
+<body>
+    <!--Main Navigation-->
+    <header>
+        <!-- Navbar -->
+            {% include "inc/navbars.html" %}
+        <!-- Navbar -->
+    </header>
+    <!--Main Navigation-->
+
+    <!--Main layout-->
+    <main class="mt-5 pt-5">
+        <div class="container">
+            {% block test %}
+            {% endblock %}
+            {% block main %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- modal -->
+    <div class="modal fade" id="basicExampleModal" 
+        tabindex="-1" 
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLabel">
+                        <strong><i class="fas fa-sign-in-alt"></i>Sign In</strong>
+                    </h3>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Default form login -->
+                    <form action="" class="text-center border border-light p-5">
+                        <p class="h4 mb-4"><strong>Sign In</strong></p>
+                        <!-- Email -->
+                        <input type="text" id="defaultLoginFormatEmail" class="form-control mb-4"
+                            placeholder="E-mail">
+                        <!-- Password -->
+                        <input type="text" id="defaultLoginFormPassword" class="form-control mb-4"
+                            placeholder="Password">
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <!-- Remember me -->
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
+                                    <label for="defaultLoginFormRemember" class="custom-control-label">Remember me</label>
+                                </div>
+                            </div>
+                            <div>
+                                <!-- Forgot password -->
+                                <a href="">Forgot password</a>
+                            </div>
+                        </div>    
+
+                        <!-- Sign in button -->
+                        <button class="btn btn-info btn-block my-4" type="submit">Sign In</button>
+
+                        <!-- Register -->
+                        <p>Not a member?
+                            <a href="">Register</a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- modal-footer -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS-->
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/modules/wow.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/handlebars.js')}}"></script>
+    <script type="text/javascript">
+
+        // Animation initialization
+        new WOW().init();
+
+        // $(document).ready
+        // $('#basicExampleModal').modal('show');
+
+        function openModal(modalId) {
+            $('#'+ modalId).modal('show');
+        }
+        function closeModal(modalId) {
+            $('#'+modalId).modal('hide');
+        }
+
+    </script>
+</body>
+</html>

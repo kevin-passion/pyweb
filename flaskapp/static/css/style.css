@@ -1,0 +1,16 @@
+body {
+    margin-top: 60px;
+}
+
+.aaa { font-weight: 700;}
+.bbb { color: red;}
+.ccc { color: blue;}
+.font-sm { font-size: 0.9rem }
+
+tr > :first-child {
+    color: red;
+}
+
+tr > :last-child {
+    color: blue;
+}

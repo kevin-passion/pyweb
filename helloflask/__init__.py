@@ -34,7 +34,8 @@ app.config.update(
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days
 )
 
-@app.before_first_request
+# @app.before_first_request
+@app.before_request
 def beforeFirstRequest():
     print(">> before_first_request!!")
     init_database()   # initialize database 

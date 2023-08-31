@@ -1,6 +1,8 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine 
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql.expression import text
 
 username = 'indiuser'
 password = 'indi1004'
@@ -14,9 +16,7 @@ mysql_url = "mariadb+pymysql://{username}:{password}@{host}/{database}?charset=u
     database = database
 )
 engine = create_engine(mysql_url)
-
-# engine = create_engine(mysql_url, echo=True,
-#                        convert_unicode=True, pool_size=20, max_overflow=0)
+# engine = create_engine(mysql_url, echo=True, convert_unicode=True, connect_args={"options": "-c timezone=utc"})
 
 # Declare & create Session
 db_session = scoped_session(sessionmaker(

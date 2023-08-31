@@ -1,0 +1,146 @@
+<!-- real_base.html을 상속 받는다 -->
+{% extends "real_base.html" %}
+{% from "macro/forms.html" import input, textarea, radio, radios, checkbox, select, modal %}
+
+
+{% block main %}
+<!--Section: Magazine v.1-->
+<section id="spclrt" class="wow fadeIn">
+
+    <!--Section heading-->
+    <h2 class="h1 text-center my-5 font-weight-bold">SPC Rule Check : <strong>{{rule_no}}</strong></h2>
+
+    <!--Grid row-->
+    <div class="row text-left">
+
+        <!--Grid column 1-->
+        <div class="col-lg-3 col-md-3">
+            <div>
+                <!-- 첨부 파일 올리기 -->
+                <form action="/upload/" method="POST" enctype="multipart/form-data">
+                    <p><input multiple type="file" name="file" ></p>
+                    <p><input type="hidden" name="menu" value="rule_check"></p>
+                    <p><input type="hidden" name="rule_no" value="{{rule_no}}"></p>
+                    <p><input type="hidden" name="colname" value="{{colname}}"></p>
+                    <p><input type="hidden" name="subgroup" value={{subgroup}}></p>
+                    <p><input type="submit" value="upload"></p>
+                </form>
+            </div>
+            <hr>
+
+            <!-- 첨부 파일 내용 조회 -->
+            <p>Upload된 파일 : <strong>{{filename}}</strong> </p>
+            <div style="overflow:scroll; width:280px; height:300px;">{{read_file | safe }}</div>
+            <hr>
+
+            <!-- 첨부 파일 내용 조회 -->
+            <label>Outlier 목록</label>
+            
+            <P style="color:red;">  l_data 출력 outlier_yn : {{outlier_yn}} </P>
+            
+            
+            
+            
+            <hr>
+
+            <!-- SPC RULE subgroup 및 컬럼 선택 -->
+            <form action="/spc/rule_col" method="POST" >
+                <label>부분군 컬럼을 선택하세요.</label>
+                {% for group_name in sub_groups %}
+                    {% if group_name == subgroup: %}
+                        {{ radio('r1','subgroup',group_name,group_name, 'checked') }}
+                    {% else:%}
+                        {{ radio('r1','subgroup',group_name,group_name) }}
+                    {% endif %}
+                {% endfor %}
+                
+
+                <!-- 첨부파일이 없을 때 -->
+                {% if sub_groups == undefined or sub_groups == []:%}
+                    {{ radio('r1','subgroup','No Parameter','No Parameter', 'checked') }}
+                {% endif %}
+
+                <label>컬럼을 선택하세요.</label>
+                {% for col_name in col_names %}
+                    {% if col_name == colname: %}
+                        {{ radio('r1','colname',col_name,col_name, 'checked') }}
+                    {% else:%}
+                        {{ radio('r1','colname',col_name,col_name) }}
+                    {% endif %}
+                {% endfor %}
+                <p>colname : {{colname}}</p>
+                <!-- 첨부파일이 없을 때 -->
+                {% if col_names == undefined or col_names == []:%}
+                    {{ radio('r1','colname','No Parameter','No Parameter', 'checked') }}
+                {% endif %}
+
+                <p><input type="hidden" name="menu" value="rule_check"></p>
+                <p><input type="hidden" name="rule_no" value="{{rule_no}}"></p>
+                
+                <!-- 2023-08-01 Test-->
+                <p><input type="hidden" name="data" value="{{data}}"></p>
+                
+
+
+
+                <!-- 첨부파일 있을 때 버튼 활성화 -->
+                {% if filename == undefined: %}
+                    <p><input type="hidden" name="filename" value="None"></p>
+                {% else: %}
+                    <p><input type="hidden" name="filename" value={{filename}}></p>
+                    <p><input type="submit" value="Rule검사"></p>
+                {% endif %}
+            </form>
+            <hr>
+
+            <!-- SPC RULE No 선택하기 -->
+            <form action="/spc/rule_check" method="POST" >
+                <label>Rule Check No를 선택하세요.</label>
+                {% for spc_rule in ['spc_rule1','spc_rule2','spc_rule3','spc_rule4','spc_rule5','spc_rule6','spc_rule7','spc_rule8'] %}
+                    {% if rule_no == spc_rule: %}
+                        {{ radio('r2','rule_no',spc_rule,spc_rule, 'checked') }}
+                    {% else:%}
+                        {{ radio('r2','rule_no',spc_rule,spc_rule) }}
+                    {% endif %}
+                {% endfor %}
+                
+                <p><input type="hidden" name="menu" value="rule_check"></p>
+
+                <!-- 첨부파일 여부 확인 -->
+                {% if filename == undefined: %}
+                    <p><input type="hidden" name="filename" value="None"></p> 
+                {% else: %}
+                    <p><input type="hidden" name="filename" value={{filename}}></p>
+                {% endif %}
+
+                {% if colname == undefined or colname == '':  %}
+                    <p><input type="hidden" name="colname" value="None"></p>
+                    <p><input type="hidden" name="subgroup" value="None"></p>
+                {% else:%}
+                    <p><input type="hidden" name="colname" value={{colname}}></p>
+                    <p><input type="hidden" name="subgroup" value={{subgroup}}></p>
+                {% endif %}
+                <p>colname : {{colname}}</p>
+                <p><input type="text" name="colname" value={{colname}}></p>
+                
+                <p><input type="submit" value="Rule검사"></p>
+            </form>
+
+        </div>
+        <!--Grid column 1-->
+        
+        <!--Grid column 2-->
+        <div class="col-lg-6 col-md-6">
+            
+            {% if spc_chart != undefined: %}
+                <img src='data:image/png;base64,{{ spc_chart | safe }}', width= '1200', height='1000' />
+            {% else: %}
+                <img src='data:image/png;base64,{{ l_chart | safe }}', width= '1200', height='1000' />
+            {% endif %}
+            
+        </div>
+        <!--Grid column 2-->
+
+    </div>
+</section>        
+{% endblock main %}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jinja Test Page</title>
+</head>
+<body>
+    <h1>Jinja Test : {{title}}</h1>
+
+    <pre>
+        ttt 한글
+        {%- if True -%}
+            TTT
+        {%- endif -%}qqq
+       
+    {{ "ABC {DD} KKK"}}
+
+    {{ "<strong>Strong-escape</strong>" | escape}}
+
+    {{ "<strong>Strong-safe</strong>" | safe}}
+
+    {{ "<strong>Strong-striptags</strong>" | striptags}}
+
+    {{bold}}
+    {{bold_escape}}
+    {{bold_unescape}}
+
+    {% raw %}
+        {% if True %}
+            TTT
+        {% endif %}
+    {% endraw %}
+
+    <ul>
+        {%- for item in lst -%}
+            <li>{{item[0]}} : {{item[1]}} - {{loop.index}}</li>
+        {%- endfor -%}
+
+        {%- for name, category in lst -%}
+            <li><p>for 2 </p>{{name}} : {{category}} - {{loop.first}}</li>
+        {%- endfor -%}
+    </ul>
+
+    <p> for loop 속에서 기본으로 제공되는 object 
+        - loop.index
+        - loop.revindex
+        - loop.first
+        - loop.last 
+        - loop.length
+    </p>
+    <ul>
+        {%- for item in lst -%}
+            <li class="{{loop.cycle('aaa', 'bbb')}}">{{item[0]}} : {{item[1]}}</li>
+        {%- endfor -%}
+    </ul>
+
+
+</pre>
+
+</body>
+</html>
