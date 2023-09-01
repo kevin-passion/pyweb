@@ -9,7 +9,7 @@ from flask import Flask, g, Response, \
         request, session, Markup, url_for, flash
 from dateutil.relativedelta import relativedelta
 import os
-from flaskapp.init_db import init_database, db_session, text
+# from flaskapp.init_db import init_database, db_session, text
 
 app = Flask(__name__)  # Flask 생성 
 import flaskapp.views
@@ -46,27 +46,28 @@ app.config.update(
 # @app.teardown_request     # stream으로 내린 후 destroy 될때 실행 
 # @app.teardown_appcontext  # application context destroy 될때 실행 
 
-@app.before_request
-def beforeFist():
-    print(">> before_first_request!!!")
-    g.str = "한글"
-    init_database()
+## linux apche 환경의 flask 테스트 환경에서 DB 제외 
+# @app.before_request
+# def beforeFist():
+#     print(">> before_first_request!!!")
+#     g.str = "한글"
+#     init_database()
 
-@app.after_request
-def afterReq(response):
-    print(">> after_request!!")
-    return response
+# @app.after_request
+# def afterReq(response):
+#     print(">> after_request!!")
+#     return response
 
-# Request가 끝났을 때 실행 
-@app.teardown_request
-def teardown_request(exception):
-    print(">>> teardown request!!", exception)
+# # Request가 끝났을 때 실행 
+# @app.teardown_request
+# def teardown_request(exception):
+#     print(">>> teardown request!!", exception)
 
-# response까지 끝났을 때 처리 
-@app.teardown_appcontext
-def teardown_context(exception):
-    print(">>> teardown context!!", exception)
-    db_session.remove()
+# # response까지 끝났을 때 처리 
+# @app.teardown_appcontext
+# def teardown_context(exception):
+#     print(">>> teardown context!!", exception)
+#     db_session.remove()
 
 @app.route("/")
 def idx():
