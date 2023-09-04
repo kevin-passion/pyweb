@@ -28,7 +28,7 @@ app.debug = True
 
 # server_name를 도메인 사용으로 지정하면 ip로는 연결되지 않는다. 
 # app.config['SERVER_NAME'] = 'local.com:5001'   # hosts에 localhost로 등록한 이름 
-app.config['SERVER_NAME'] = 'chosangeun-virtual.me'   # hosts에 localhost로 등록한 이름 
+app.config['SERVER_NAME'] = '127.0.1.1'   # hosts에 localhost로 등록한 이름 
 
 
 # jinja 사용구문에서 개행되는 것을 방지  
