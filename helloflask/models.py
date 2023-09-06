@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, DateTime, TIMESTAMP, ForeignKey, PrimaryKeyConstraint, func, Table
+from sqlalchemy import Column, Integer, Float, MetaData, String, DateTime, TIMESTAMP, ForeignKey, PrimaryKeyConstraint, func, Table
 from sqlalchemy.orm import relationship, backref
 from helloflask.init_db import Base
 
