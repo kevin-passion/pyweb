@@ -27,7 +27,7 @@ import sys
 app.debug = True
 
 # server_name를 도메인 사용으로 지정하면 ip로는 연결되지 않는다. 
-# app.config['SERVER_NAME'] = 'chosangeun-virtual.me:5000'   # hosts에 localhost로 등록한 이름 
+app.config['SERVER_NAME'] = 'chosangeun-virtual.me:5005'   # hosts에 localhost로 등록한 이름 
 
 # jinja 사용구문에서 개행되는 것을 방지  
 app.jinja_env.trim_blocks = True 
@@ -40,6 +40,9 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=timedelta(31)
 )
 
+if __name__ == '__main__':
+    app.run(host='chosangeun-virtual.me', port=5005)
+    
 # @app.before_first_request # 첫번째 요청을 부를 때 실행.
 # @app.before_request       # 매번 요청을 부를 때 마다 실행 (router가 model에게 전달하기 전, 대표적 web filter )
 # @app.after_request        # 요청을 실행 후에 실행 
