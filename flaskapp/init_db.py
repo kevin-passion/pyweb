@@ -6,7 +6,8 @@ from sqlalchemy.sql.expression import text
 
 username = 'indiuser'
 password = 'indi1004'
-host = 'localhost'
+# host = 'localhost'
+host = '192.168.0.78'
 database = 'indidb'
 # mysql_url = f"mariadb+pymysql://{username}:{password}@{host}/{database}?charset=utf8"  #문자열 포맷팅 적용 두가지 예
 mysql_url = "mariadb+pymysql://{username}:{password}@{host}/{database}?charset=utf8".format(
